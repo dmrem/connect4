@@ -2,6 +2,7 @@ mod utils;
 
 use std::fmt;
 use wasm_bindgen::prelude::*;
+use crate::utils::set_panic_hook;
 
 const BOARD_WIDTH: usize = 7;
 const BOARD_HEIGHT: usize = 6;
@@ -33,14 +34,15 @@ pub struct Board {
 #[wasm_bindgen]
 impl Board {
     pub fn new() -> Board {
+        set_panic_hook();
         Board {
             board: [[Token::Empty; BOARD_HEIGHT]; BOARD_WIDTH],
         }
     }
 
     pub fn drop_token(&mut self, col: usize, t: Token) -> Result<(), String> {
-        if t == Token::Empty {
-            return Err("Cannot drop a null token!".to_string());
+        if t != Token::P1 && t != Token::P2 {
+            return Err("Cannot drop an unknown token!".to_string());
         }
 
         match self.board.get_mut(col) {
@@ -58,8 +60,17 @@ impl Board {
         }
     }
 
-    pub fn render(&self) -> String {
-        return self.to_string();
+
+    pub fn get_column(&self, col_idx: usize) -> *const Token {
+        self.board[col_idx].as_ptr()
+    }
+
+    pub fn get_height() -> usize {
+        BOARD_HEIGHT
+    }
+
+    pub fn get_width() -> usize {
+        BOARD_WIDTH
     }
 }
 

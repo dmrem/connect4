@@ -1,12 +1,74 @@
-import {Board} from "wasm-c4";
+import {Board, Token} from "wasm-c4";
+import {memory} from "wasm-c4/c4_bg"
 
-const pre = document.getElementById("board");
+const CELL_SIZE = 100;
+const GRID_COLOUR = "#000000"
+const EMPTY_COLOUR = "#FFFFFF"
+const P1_COLOUR = "#FF0000"
+const P2_COLOUR = "#FFFF00"
+
+function drawGrid(ctx) {
+    ctx.beginPath();
+    ctx.strokeStyle = GRID_COLOUR;
+
+    // vertical lines
+    for(let i = 0; i <= Board.get_width(); i++) {
+        ctx.moveTo(i * (CELL_SIZE + 1) + 1, 0);
+        ctx.lineTo(i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * Board.get_height() + 1);
+    }
+
+    // horizontal lines
+    for(let i = 0; i <= Board.get_height(); i++) {
+        ctx.moveTo(0, i * (CELL_SIZE + 1) + 1);
+        ctx.lineTo((CELL_SIZE + 1) * Board.get_width() + 1, i * (CELL_SIZE + 1) + 1);
+    }
+
+    ctx.stroke();
+}
+
+function drawColumn(ctx, board, colIdx) {
+    const columnPtr = board.get_column(colIdx);
+    const tokens = new Uint8Array(memory.buffer, columnPtr, Board.get_height());
+
+    ctx.beginPath();
+
+    for( let row = Board.get_height() - 1; row >= 0; row-- ) {
+        switch (tokens[row]) {
+            case Token.Empty:
+                ctx.fillStyle = EMPTY_COLOUR;
+                break;
+            case Token.P1:
+                ctx.fillStyle = P1_COLOUR;
+                break;
+            case Token.P2:
+                ctx.fillStyle = P2_COLOUR;
+                break;
+        }
+        ctx.fillRect(
+            colIdx * (CELL_SIZE + 1) + 1,
+            row * (CELL_SIZE + 1) + 1,
+            CELL_SIZE,
+            CELL_SIZE
+        );
+    }
+
+    ctx.stroke();
+}
+
+/////////////////////////////////
+// ENTRYPOINT ///////////////////
+/////////////////////////////////
+
+const canvas = document.getElementById("board");
+
+canvas.height = (Board.get_height() + 1) * CELL_SIZE + 1;
+canvas.width = (Board.get_width() + 1) * CELL_SIZE + 1;
+
+const ctx = canvas.getContext('2d');
 
 let b = Board.new();
-b.drop_token(5, 2);
-b.drop_token(5, 2);
-b.drop_token(5, 2);
-b.drop_token(5, 2);
-b.drop_token(5, 1);
-b.drop_token(5, 2);
-pre.textContent = b.render();
+
+drawGrid(ctx);
+for (let i = 0; i < Board.get_width(); i++) {
+    drawColumn(ctx, b, i);
+}

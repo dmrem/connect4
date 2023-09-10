@@ -1,8 +1,8 @@
 mod utils;
 
+use crate::utils::set_panic_hook;
 use std::fmt;
 use wasm_bindgen::prelude::*;
-use crate::utils::set_panic_hook;
 
 const BOARD_WIDTH: usize = 7;
 const BOARD_HEIGHT: usize = 6;
@@ -59,7 +59,6 @@ impl Board {
             },
         }
     }
-
 
     pub fn get_column(&self, col_idx: usize) -> *const Token {
         self.board[col_idx].as_ptr()

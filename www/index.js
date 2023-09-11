@@ -26,6 +26,7 @@ function startGame(canvas) {
         drawColumn(ctx, board, i);
     }
 
+    document.getElementById("error").innerText = "";
     document.getElementById("current_player").innerText = `It's ${Token[currentPlayer.toString()]}'s turn!`;
 }
 
@@ -34,13 +35,13 @@ function drawGrid(ctx) {
     ctx.strokeStyle = GRID_COLOUR;
 
     // vertical lines
-    for(let i = 0; i <= Board.get_width(); i++) {
+    for (let i = 0; i <= Board.get_width(); i++) {
         ctx.moveTo(i * (CELL_SIZE + 1) + 1, 0);
         ctx.lineTo(i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * Board.get_height() + 1);
     }
 
     // horizontal lines
-    for(let i = 0; i <= Board.get_height(); i++) {
+    for (let i = 0; i <= Board.get_height(); i++) {
         ctx.moveTo(0, i * (CELL_SIZE + 1) + 1);
         ctx.lineTo((CELL_SIZE + 1) * Board.get_width() + 1, i * (CELL_SIZE + 1) + 1);
     }
@@ -54,7 +55,7 @@ function drawColumn(ctx, board, colIdx) {
 
     ctx.beginPath();
 
-    for( let row = Board.get_height() - 1; row >= 0; row-- ) {
+    for (let row = Board.get_height() - 1; row >= 0; row--) {
         switch (tokens[row]) {
             case Token.Empty:
                 ctx.fillStyle = EMPTY_COLOUR;
@@ -93,8 +94,7 @@ function handleClick(event) {
 
         currentPlayer = currentPlayer === Token.P1 ? Token.P2 : Token.P1;
         document.getElementById("current_player").innerText = `It's ${Token[currentPlayer.toString()]}'s turn!`;
-    }
-    catch (e) {
+    } catch (e) {
         document.getElementById("error").innerText = e;
     }
 }
@@ -104,3 +104,4 @@ function handleClick(event) {
 /////////////////////////////////
 
 startGame(canvas);
+document.getElementById("restart_button").addEventListener("click", () => startGame(canvas))

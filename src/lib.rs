@@ -36,7 +36,7 @@ impl Board {
     pub fn new() -> Board {
         set_panic_hook();
         Board {
-            board: [[Token::Empty; BOARD_HEIGHT]; BOARD_WIDTH],
+            board: [[Token::Empty; BOARD_HEIGHT]; BOARD_WIDTH], // initialize with all positions empty
         }
     }
 
@@ -60,6 +60,10 @@ impl Board {
         }
     }
 
+
+    // this function returns a pointer to the beginning of the array for whichever column was requested
+    // this is used by the JS code to avoid copying the entire array into a JS object, since that's slow
+    // instead, the JS can just get the pointer and read the WASM memory directly
     pub fn get_column(&self, col_idx: usize) -> *const Token {
         self.board[col_idx].as_ptr()
     }
